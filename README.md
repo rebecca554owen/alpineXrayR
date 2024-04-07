@@ -4,6 +4,9 @@
 ```
 bash <(curl -Ls https://raw.githubusercontent.com/rebecca554owen/alpineXrayR/main/alpine-xrayr.sh)
 ```
+```
+bash <(curl -Ls https://raw.githubusercontents.com/rebecca554owen/alpineXrayR/main/alpine-xrayr.sh)
+```
 #### 重启XrayR
 ```
 /etc/init.d/XrayR restart
