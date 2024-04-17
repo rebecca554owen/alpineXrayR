@@ -48,7 +48,7 @@ depend() {
 
 start() {
     ebegin "Starting XrayR"
-    start-stop-daemon --start --exec /usr/bin/XrayR -- -config /etc/XrayR/config.yml
+    start-stop-daemon --start --exec /usr/bin/XrayR -- --config /etc/XrayR/config.yml >> /var/log/XrayR.log 2>&1
     eend $?
 }
 
@@ -62,7 +62,7 @@ restart() {
     ebegin "Restarting XrayR"
     start-stop-daemon --stop --exec /usr/bin/XrayR
     sleep 1
-    start-stop-daemon --start --exec /usr/bin/XrayR -- -config /etc/XrayR/config.yml
+    start-stop-daemon --start --exec /usr/bin/XrayR -- --config /etc/XrayR/config.yml >> /var/log/XrayR.log 2>&1
     eend $?
 }
 EOF
@@ -140,9 +140,10 @@ menu() {
     echo "4) 查看 XrayR 日志"
     echo "5) 更新 XrayR"
     echo "6) 修改 XrayR 配置"
-    echo "7) 卸载 XrayR"
-    echo "8) 退出"
-    read -p "请输入选项 [1-8]: " option
+    echo "7) 重启 XrayR"
+    echo "8) 卸载 XrayR"
+    echo "9) 退出"
+    read -p "请输入选项 [1-9]: " option
 
     case $option in
         1)
@@ -166,8 +167,13 @@ menu() {
         6)
             echo "修改 XrayR 配置..."
             vim /etc/XrayR/config.yml
+            rc-service XrayR restart
             ;;
         7)
+            echo "重启 XrayR 服务..."
+            restart
+            ;;
+        8)
             echo "卸载 XrayR..."
             rc-service XrayR stop
             rc-update del XrayR default
@@ -175,7 +181,7 @@ menu() {
             rm /usr/bin/XrayR
             echo "XrayR 已卸载！"
             ;;
-        8)
+        9)
             echo "退出菜单..."
             exit 0
             ;;
