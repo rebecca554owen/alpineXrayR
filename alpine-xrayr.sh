@@ -165,7 +165,7 @@ menu() {
             ;;
         6)
             echo "修改 XrayR 配置..."
-            vi /etc/XrayR/config.yml
+            vim /etc/XrayR/config.yml
             ;;
         7)
             echo "卸载 XrayR..."
