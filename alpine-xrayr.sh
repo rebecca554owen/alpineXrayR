@@ -106,7 +106,19 @@ update_xrayr() {
     FILE=""
 
     case "$ARCH" in
-      ...
+        "x86_64")
+            FILE="XrayR-linux-64.zip"
+            ;;
+        "i386" | "i686")
+            FILE="XrayR-linux-32.zip"
+            ;;
+        "aarch64")
+            FILE="XrayR-linux-arm64-v8a.zip"
+            ;;
+        *)
+            echo "不支持的架构: $ARCH"
+            exit 1
+            ;;
     esac
 
     URL="$BASE_URL/$VERSION/$FILE"
