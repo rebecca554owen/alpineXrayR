@@ -125,50 +125,69 @@ update_xrayr() {
 
     echo "XrayR 更新完成！"
 }
+#!/bin/sh
 
-echo "选择一个操作:"
-echo "1) 安装 XrayR"
-echo "2) 启动 XrayR"
-echo "3) 停止 XrayR"
-echo "4) 查看 XrayR 日志"
-echo "5) 更新 XrayR"
-echo "6) 修改 XrayR 配置"
-echo "7) 卸载 XrayR"
-read -p "请输入选项 [1-7]: " option
+install_xrayr() {
+    # 安装 XrayR 的代码...
+}
 
-case $option in
-    1)
-        install_xrayr
-        ;;
-    2)
-        echo "启动 XrayR 服务..."
-        rc-service XrayR start
-        ;;
-    3)
-        echo "停止 XrayR 服务..."
-        rc-service XrayR stop
-        ;;
-    4)
-        echo "显示 XrayR 日志..."
-        journalctl -u XrayR
-        ;;
-    5)
-        update_xrayr
-        ;;
-    6)
-        echo "修改 XrayR 配置..."
-        vim /etc/XrayR/config.yml
-        ;;
-    7)
-        echo "卸载 XrayR..."
-        rc-service XrayR stop
-        rc-update del XrayR default
-        rm -rf /etc/XrayR
-        rm /usr/bin/XrayR
-        echo "XrayR 已卸载！"
-        ;;
-    *)
-        echo "无效选项，退出..."
-        exit 1
-        ;;
-esac
+update_xrayr() {
+    # 更新 XrayR 的代码...
+}
+
+menu() {
+  while true; do
+    echo "选择一个操作:"
+    echo "1) 安装 XrayR"
+    echo "2) 启动 XrayR"
+    echo "3) 停止 XrayR"
+    echo "4) 查看 XrayR 日志"
+    echo "5) 更新 XrayR"
+    echo "6) 修改 XrayR 配置"
+    echo "7) 卸载 XrayR"
+    echo "8) 退出"
+    read -p "请输入选项 [1-8]: " option
+
+    case $option in
+        1)
+            install_xrayr
+            ;;
+        2)
+            echo "启动 XrayR 服务..."
+            rc-service XrayR start
+            ;;
+        3)
+            echo "停止 XrayR 服务..."
+            rc-service XrayR stop
+            ;;
+        4)
+            echo "显示 XrayR 日志... (按 q 退出日志查看)"
+            tail -f /var/log/XrayR.log
+            ;;
+        5)
+            update_xrayr
+            ;;
+        6)
+            echo "修改 XrayR 配置..."
+            vi /etc/XrayR/config.yml
+            ;;
+        7)
+            echo "卸载 XrayR..."
+            rc-service XrayR stop
+            rc-update del XrayR default
+            rm -rf /etc/XrayR
+            rm /usr/bin/XrayR
+            echo "XrayR 已卸载！"
+            ;;
+        8)
+            echo "退出菜单..."
+            exit 0
+            ;;
+        *)
+            echo "无效选项，请重新输入..."
+            ;;
+    esac
+  done
+}
+
+menu
