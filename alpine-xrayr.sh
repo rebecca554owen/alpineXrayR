@@ -1,54 +1,45 @@
 #!/bin/sh
-# 更新软件源
-apk update
-# 安装依赖项
-apk add curl jq unzip openrc ca-certificates
 
-# 获取最新版本号
-LATEST_VERSION=$(curl -s https://api.github.com/repos/wyx2685/XrayR/releases/latest | jq -r '.tag_name')
+install_xrayr() {
+    apk update
+    apk add ca-certificates curl jq openrc unzip vim
 
-# 提示用户输入版本号
-echo "请输入 XrayR 的版本号 (直接回车将使用最新版本 $LATEST_VERSION):"
-read -r USER_INPUT_VERSION
+    LATEST_VERSION=$(curl -s https://api.github.com/repos/wyx2685/XrayR/releases/latest | jq -r '.tag_name')
 
-# 使用用户输入的版本号或默认到最新版本
-VERSION=${USER_INPUT_VERSION:-$LATEST_VERSION}
+    echo "请输入 XrayR 的版本号 (直接回车将使用最新版本 $LATEST_VERSION):"
+    read -r USER_INPUT_VERSION
 
-# 检测系统架构并构建下载链接
-ARCH=$(uname -m)
-BASE_URL="https://github.com/wyx2685/XrayR/releases/download"
-FILE=""
+    VERSION=${USER_INPUT_VERSION:-$LATEST_VERSION}
 
-case "$ARCH" in
-  "x86_64")
-    FILE="XrayR-linux-64.zip"
-    ;;
-  "i386" | "i686")
-    FILE="XrayR-linux-32.zip"
-    ;;
-  "aarch64")
-    FILE="XrayR-linux-arm64-v8a.zip"
-    ;;
-  *)
-    echo "不支持的架构: $ARCH"
-    exit 1
-    ;;
-esac
+    ARCH=$(uname -m)
+    BASE_URL="https://github.com/wyx2685/XrayR/releases/download"
+    FILE=""
 
-URL="$BASE_URL/$VERSION/$FILE"
+    case "$ARCH" in
+        "x86_64")
+            FILE="XrayR-linux-64.zip"
+            ;;
+        "i386" | "i686")
+            FILE="XrayR-linux-32.zip"
+            ;;
+        "aarch64")
+            FILE="XrayR-linux-arm64-v8a.zip"
+            ;;
+        *)
+            echo "不支持的架构: $ARCH"
+            exit 1
+            ;;
+    esac
 
-# 下载 XrayR
-curl -L -o XrayR.zip "$URL" || { echo "下载 XrayR 失败"; exit 1; }
-# 解压缩
-unzip XrayR.zip -d /etc/XrayR || { echo "解压 XrayR 失败"; exit 1; }
-# 删除压缩包
-rm XrayR.zip
-# 添加执行权限
-chmod +x /etc/XrayR/XrayR
-# 创建软链接
-ln -sf /etc/XrayR/XrayR /usr/bin/XrayR
-# 创建 XrayR 服务文件
-cat << "EOF" > /etc/init.d/XrayR
+    URL="$BASE_URL/$VERSION/$FILE"
+
+    curl -L -o XrayR.zip "$URL" || { echo "下载 XrayR 失败"; exit 1; }
+    unzip XrayR.zip -d /etc/XrayR || { echo "解压 XrayR 失败"; exit 1; }
+    rm XrayR.zip
+    chmod +x /etc/XrayR/XrayR
+    ln -sf /etc/XrayR/XrayR /usr/bin/XrayR
+
+    cat << "EOF" > /etc/init.d/XrayR
 #!/sbin/openrc-run
 
 depend() {
@@ -76,15 +67,108 @@ restart() {
 }
 EOF
 
-# 添加执行权限
-chmod +x /etc/init.d/XrayR
+    chmod +x /etc/init.d/XrayR
 
-# 添加到开机启动项中
-if rc-update add XrayR default; then
-  echo "XrayR 已添加到启动项。"
-else
-  echo "添加 XrayR 到启动项失败。"
-  exit 1
-fi
+    if rc-update add XrayR default; then
+        echo "XrayR 已添加到启动项。"
+    else
+        echo "添加 XrayR 到启动项失败。"
+        exit 1
+    fi
 
-echo "安装完成！"
+    echo "安装完成！"
+}
+
+#!/bin/sh
+
+install_xrayr() {
+    echo "开始安装 XrayR..."
+    ...
+}
+
+update_xrayr() {
+    echo "更新 XrayR..."
+    # 先停止服务
+    rc-service XrayR stop
+
+    apk update
+    apk add ca-certificates curl jq openrc unzip vim
+
+    LATEST_VERSION=$(curl -s https://api.github.com/repos/wyx2685/XrayR/releases/latest | jq -r '.tag_name')
+
+    echo "请输入 XrayR 的版本号 (直接回车将使用最新版本 $LATEST_VERSION):"
+    read -r USER_INPUT_VERSION
+
+    VERSION=${USER_INPUT_VERSION:-$LATEST_VERSION}
+
+    ARCH=$(uname -m)
+    BASE_URL="https://github.com/wyx2685/XrayR/releases/download"
+    FILE=""
+
+    case "$ARCH" in
+      ...
+    esac
+
+    URL="$BASE_URL/$VERSION/$FILE"
+
+    curl -L -o XrayR.zip "$URL" || { echo "下载 XrayR 失败"; exit 1; }
+    
+    # 解压文件，排除config.yml以避免覆盖
+    unzip -o XrayR.zip -d /etc/XrayR -x *config.yml || { echo "解压 XrayR 失败"; exit 1; }
+    
+    rm XrayR.zip
+    chmod +x /etc/XrayR/XrayR
+    ln -sf /etc/XrayR/XrayR /usr/bin/XrayR
+    
+    # 再启动服务
+    rc-service XrayR start
+
+    echo "XrayR 更新完成！"
+}
+
+echo "选择一个操作:"
+echo "1) 安装 XrayR"
+echo "2) 启动 XrayR"
+echo "3) 停止 XrayR"
+echo "4) 查看 XrayR 日志"
+echo "5) 更新 XrayR"
+echo "6) 修改 XrayR 配置"
+echo "7) 卸载 XrayR"
+read -p "请输入选项 [1-7]: " option
+
+case $option in
+    1)
+        install_xrayr
+        ;;
+    2)
+        echo "启动 XrayR 服务..."
+        rc-service XrayR start
+        ;;
+    3)
+        echo "停止 XrayR 服务..."
+        rc-service XrayR stop
+        ;;
+    4)
+        echo "显示 XrayR 日志..."
+        journalctl -u XrayR
+        ;;
+    5)
+        update_xrayr
+        ;;
+    6)
+        echo "修改 XrayR 配置..."
+        vim /etc/XrayR/config.yml
+        ;;
+    7)
+        echo "卸载 XrayR..."
+        rc-service XrayR stop
+        rc-update del XrayR default
+        rm -rf /etc/XrayR
+        rm /usr/bin/XrayR
+        echo "XrayR 已卸载！"
+        ;;
+    *)
+        echo "无效选项，退出..."
+        exit 1
+        ;;
+esac
