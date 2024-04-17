@@ -171,7 +171,7 @@ menu() {
             ;;
         7)
             echo "重启 XrayR 服务..."
-            restart
+            rc-service XrayR restart
             ;;
         8)
             echo "卸载 XrayR..."
