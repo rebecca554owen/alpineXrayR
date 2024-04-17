@@ -79,13 +79,6 @@ EOF
     echo "安装完成！"
 }
 
-#!/bin/sh
-
-install_xrayr() {
-    echo "开始安装 XrayR..."
-    ...
-}
-
 update_xrayr() {
     echo "更新 XrayR..."
     # 先停止服务
@@ -136,15 +129,6 @@ update_xrayr() {
     rc-service XrayR start
 
     echo "XrayR 更新完成！"
-}
-#!/bin/sh
-
-install_xrayr() {
-    # 安装 XrayR 的代码...
-}
-
-update_xrayr() {
-    # 更新 XrayR 的代码...
 }
 
 menu() {
